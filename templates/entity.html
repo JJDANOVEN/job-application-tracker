@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-heading"><div><h1>{{ entity.title }}</h1><p>Manage your {{ entity.title|lower }} records.</p></div></div>
+<section class="panel form-panel"><h2>{{ 'Edit record' if edit_row else 'Add new record' }}</h2>
+<form method="post" action="{{ url_for('edit_entity', slug=slug, item_id=edit_row[entity.pk]) if edit_row else url_for('add_entity', slug=slug) }}" class="form-grid">
+{% for field, label, kind, required in entity.fields %}
+<div class="field {% if kind == 'textarea' %}wide{% endif %}">
+<label for="{{ field }}">{{ label }}{% if required %} *{% endif %}</label>
+{% if kind == 'textarea' %}<textarea id="{{ field }}" name="{{ field }}" rows="3">{{ edit_row[field] if edit_row and edit_row[field] else '' }}</textarea>
+{% elif kind == 'company_select' %}<select id="{{ field }}" name="{{ field }}" {% if required %}required{% endif %}><option value="">Select company</option>{% for c in options.companies %}<option value="{{ c.company_id }}" {% if edit_row and edit_row[field] == c.company_id %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select>
+{% elif kind == 'job_select' %}<select id="{{ field }}" name="{{ field }}" {% if required %}required{% endif %}><option value="">Select job</option>{% for j in options.jobs %}<option value="{{ j.job_id }}" {% if edit_row and edit_row[field] == j.job_id %}selected{% endif %}>{{ j.title }} — {{ j.company_name }}</option>{% endfor %}</select>
+{% else %}<input id="{{ field }}" name="{{ field }}" type="{{ kind }}" value="{{ edit_row[field] if edit_row and edit_row[field] is not none else '' }}" {% if required %}required{% endif %}>
+{% endif %}
+</div>{% endfor %}
+<div class="form-actions"><button class="button primary" type="submit">{{ 'Save changes' if edit_row else 'Add record' }}</button>{% if edit_row %}<a class="button secondary" href="{{ url_for('list_entity', slug=slug) }}">Cancel</a>{% endif %}</div>
+</form></section>
+<section class="panel"><h2>Saved Records</h2>{% if rows %}<div class="table-wrap"><table><thead><tr><th>ID</th>{% for field, label, kind, required in entity.fields %}<th>{{ label }}</th>{% endfor %}<th>Actions</th></tr></thead><tbody>
+{% for row in rows %}<tr><td>{{ row[entity.pk] }}</td>{% for field, label, kind, required in entity.fields %}<td>{{ row[field] if row[field] is not none else '—' }}</td>{% endfor %}<td class="actions"><a href="{{ url_for('edit_entity', slug=slug, item_id=row[entity.pk]) }}">Edit</a><form method="post" action="{{ url_for('delete_entity', slug=slug, item_id=row[entity.pk]) }}" onsubmit="return confirm('Delete this record?');"><button class="link-danger" type="submit">Delete</button></form></td></tr>{% endfor %}
+</tbody></table></div>{% else %}<p class="empty">No records yet.</p>{% endif %}</section>
+{% endblock %}

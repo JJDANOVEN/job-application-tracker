@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="welcome"><h1>Your job search, organized.</h1><p>Keep track of opportunities, applications, companies, and contacts in one place.</p></section>
+<div class="stats">
+  {% for key, value in summary.items() %}<div class="stat"><div class="stat-number">{{ value }}</div><div class="stat-label">{{ key|capitalize }}</div></div>{% endfor %}
+</div>
+<section class="panel"><div class="panel-heading"><h2>Recent Applications</h2><a class="button" href="{{ url_for('list_entity', slug='applications') }}">View all</a></div>
+{% if recent %}<div class="table-wrap"><table><thead><tr><th>Job</th><th>Company</th><th>Status</th><th>Date applied</th></tr></thead><tbody>{% for row in recent %}<tr><td>{{ row.job_title }}</td><td>{{ row.company_name }}</td><td><span class="pill">{{ row.status }}</span></td><td>{{ row.date_applied or '—' }}</td></tr>{% endfor %}</tbody></table></div>{% else %}<p class="empty">No applications yet. Add a company and job to get started.</p>{% endif %}</section>
+<div class="quick-links"><a class="button" href="{{ url_for('list_entity', slug='companies') }}">+ Add Company</a><a class="button" href="{{ url_for('list_entity', slug='jobs') }}">+ Add Job</a><a class="button" href="{{ url_for('list_entity', slug='applications') }}">+ Add Application</a></div>
+{% endblock %}

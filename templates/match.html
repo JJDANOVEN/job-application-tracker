@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-heading"><div><h1>Job Match</h1><p>Compare your skills with the skills listed for each job.</p></div></div>
+<section class="panel"><form method="post"><label for="skills"><strong>Your skills</strong></label><p class="helper">Enter skills separated by commas, such as Python, SQL, Flask, teamwork.</p><textarea id="skills" name="skills" rows="3" placeholder="Python, SQL, HTML, communication">{{ skills_text }}</textarea><button class="button primary" type="submit">Calculate Matches</button></form></section>
+{% if results %}<section class="panel"><h2>Results</h2>{% for result in results %}<div class="match-card"><div class="match-top"><div><h3>{{ result.job.title }}</h3><p>{{ result.job.company_name }} · {{ result.job.location or 'Location not listed' }}</p></div><strong class="match-percent">{{ result.percent }}%</strong></div><div class="progress"><div style="width: {{ result.percent }}%"></div></div><div class="skills-list"><p><strong>Matched:</strong> {{ result.matched|join(', ') if result.matched else 'None' }}</p><p><strong>Missing:</strong> {{ result.missing|join(', ') if result.missing else 'None' }}</p></div></div>{% endfor %}</section>{% elif request.method == 'POST' %}<p class="empty">No job listings to compare yet. Add jobs first.</p>{% endif %}
+{% endblock %}
